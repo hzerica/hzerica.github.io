@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+	<meta charset="UTF-8">
+	<title>欧石南</title>
+	<style>
+		* {padding: 0; margin: 0; box-sizing:border-box;}
+		li {list-style: none;}
+		#limit {width: 100%; height: 100%; position: fixed; left: 0; top: 0;}
+		#con {height: 100%;}
+		#con li {height: 100%; min-width: 100px;}
+		#con li .autoWidth {height: 100%; background: red; background: no-repeat center center; background-size: contain;}
+		#con li._1 {background-color: #0086f2;}
+		#con li._2 {}
+		#con li._3 {background-color: #0086f2;}
+		#con li._4 {}
+		#con li._5 {background-color: #0086f2;}
+		#con li._6 {}
+		#con li._7 {background-color: #0086f2;}
+		#con li._8 {}
+		#con li._9 {}
+		#con li._1 .autoWidth {background-image: url(img/_1.jpg);}
+		#con li._2 .autoWidth {background-image: url(img/_2.jpg);}
+		#con li._3 .autoWidth {background-image: url(img/_3.jpg);}
+		#con li._4 .autoWidth {background-image: url(img/_4.jpg);}
+		#con li._5 .autoWidth {background-image: url(img/_5.jpg);}
+		#con li._6 .autoWidth {background-image: url(img/_6.jpg);}
+		#con li._7 .autoWidth {background-image: url(img/_7.jpg);}
+		#con li._8 .autoWidth {background-image: url(img/_8.jpg);}
+		#con li._9 .autoWidth {background-image: url(img/_9.jpg);}
+
+		.autoWidth {max-width: 1000px; margin: 0 auto;}
+		.autoWidth .secImg {width: 100%;}
+	</style>
+</head>
+<body>
+	
+	<div id="limit">
+		<ul id="con">
+			<li class="_1">
+				<div class="autoWidth">
+				</div>
+			</li>
+			<li class="_2">
+				<div class="autoWidth">
+				</div>
+			</li>
+			<li class="_3">
+				<div class="autoWidth">
+				</div>
+			</li>
+			<li class="_4">
+				<div class="autoWidth">
+				</div>
+			</li>
+			<li class="_5">
+				<div class="autoWidth">
+				</div>
+			</li>
+			<li class="_6">
+				<div class="autoWidth">
+				</div>
+			</li>
+			<li class="_7">
+				<div class="autoWidth">
+				</div>
+			</li>
+			<li class="_8">
+				<div class="autoWidth">
+				</div>
+			</li>
+			<li class="_9">
+				<div class="autoWidth">
+				</div>
+			</li>
+		</ul>
+	</div>
+
+
+	<script src="js/jq.js"></script>
+	<script>
+	var isPC=navigator.userAgent.indexOf('Windows')>-1;
+	var now=0;
+	var isAnimate=false;
+	var con=$('#con');
+	var li=con.children();
+
+	function addEvent(obj, sEv, fn){
+		if(obj.attachEvent){
+			obj.attachEvent('on'+sEv, function(){
+				fn.call(obj, event);
+			});
+		}else{
+			obj.addEventListener(sEv, fn, false);
+		}
+	}
+
+	function addWheel(obj, fn){
+		addEvent(obj, 'mousewheel', fnWheel);
+		addEvent(obj, 'DOMMouseScroll', fnWheel, false);
+
+		function fnWheel(e){
+			e=e||event;
+			var bDown=e.wheelDelta<0||e.detail>0;
+			fn && fn.call(obj, bDown);
+		}
+	}
+
+	function setState(){
+		$('#con').stop().animate({
+			marginTop: -now*$(window).height()
+		}, 600, function(){
+			isAnimate=false;
+		});
+	}
+
+	addWheel(document, function(bDown){
+		if(isAnimate)return;
+		isAnimate=true;
+		bDown?now++:now--;
+		if(now==-1)now=0;
+		if(now==li.length)now=li.length-1;
+		setState();
+	});
+
+	document.onselectstart=function(){
+		return false;
+	}
+
+	$(window).resize(function(){
+		setState();
+	});
+
+
+	var y=0;
+
+	document.addEventListener && document.addEventListener('touchstart', function(e){
+		e.preventDefault();
+		con.css({
+			transition: 'none'
+		});
+
+		var disY=e.targetTouches[0].clientY- y;
+		var oldY=e.targetTouches[0].clientY;
+
+		function fnMove(e){
+			y=e.targetTouches[0].clientY- disY;
+			con.css({
+				'-webkit-transform': 'translateY('+y+'px)'
+			});
+		}
+
+		function fnEnd(e){
+			var distance=e.changedTouches[0].clientY- oldY;
+			distance<0?now++:now--;
+			if(now==-1)now=0;
+			if(now==li.length)now=li.length-1;
+			y=-now*$(window).height();
+			con.css({
+				transition: '.5s all',
+				'-webkit-transform': 'translateY('+y+'px)'
+			});
+
+			document.removeEventListener('touchmove', fnMove, false);
+			document.removeEventListener('touchend', fnEnd, false);
+		}
+
+		document.addEventListener('touchmove', fnMove, false);
+		document.addEventListener('touchend', fnEnd, false);
+
+	}, false);
+	</script>
+	
+
+
+</body>
+</html>
